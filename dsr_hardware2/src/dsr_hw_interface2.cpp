@@ -33,6 +33,7 @@ bool g_bIsEmulatorMode = FALSE;
 bool g_bHasControlAuthority = FALSE;
 bool g_bTpInitailizingComplted = FALSE;
 bool g_bHommingCompleted = FALSE;
+bool g_initflag = TRUE;
 
 ROBOT_JOINT_DATA g_joints[NUM_JOINT];
 
@@ -658,8 +659,11 @@ void DSRInterface::OnMonitoringStateCB(const ROBOT_STATE eState)
         break;
     case STATE_SAFE_OFF:
         if (g_bHasControlAuthority){
-            Drfl.set_robot_control(CONTROL_SERVO_ON);
-            Drfl.set_robot_mode(ROBOT_MODE_MANUAL);   //Idle Servo Off 후 servo on 하는 상황 발생 시 set_robot_mode 명령을 전송해 manual 로 전환. add 2020/04/28
+            if (g_initflag){
+                Drfl.set_robot_control(CONTROL_SERVO_ON);
+                g_initflag = false; 
+            }
+            // Drfl.set_robot_mode(ROBOT_MODE_MANUAL);   //Idle Servo Off 후 servo on 하는 상황 발생 시 set_robot_mode 명령을 전송해 manual 로 전환. add 2020/04/28
         } 
         break;
     case STATE_SAFE_STOP2:
@@ -671,7 +675,7 @@ void DSRInterface::OnMonitoringStateCB(const ROBOT_STATE eState)
         }
         break;
     case STATE_RECOVERY:
-        Drfl.set_robot_control(CONTROL_RESET_RECOVERY);
+        // Drfl.set_robot_control(CONTROL_RESET_RECOVERY);
         break;
     default:
         break;
