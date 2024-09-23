@@ -66,6 +66,7 @@
 #define NUM_BUTTON               (5)
 #define NUM_BUTTON_EX            (6)
 #define NUMBER_OF_TASK           (6)
+#define NUMBER_OF_ITER_THRESHOULD           (2)
 
 //
 // string constants

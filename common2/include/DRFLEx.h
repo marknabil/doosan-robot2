@@ -234,6 +234,9 @@ namespace DRAFramework
         DRFL_API LPROBOT_POSE _trans(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_TASK], float fOffset[NUM_TASK], COORDINATE_SYSTEM eSourceRef = COORDINATE_SYSTEM_BASE, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE);
         DRFL_API LPROBOT_POSE _ikin(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE);
 		DRFL_API LPINVERSE_KINEMATIC_RESPONSE _ikin_ex(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, unsigned char iRefPosOpt);
+        DRFL_API LPINVERSE_KINEMATIC_RESPONSE _ikin_add_iter_threshold(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, float fIterThreshold[2]);
+        DRFL_API LPINVERSE_KINEMATIC_RESPONSE _ikin_norm(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef,  unsigned char iRefPosOpt);
+        
         DRFL_API LPROBOT_POSE _fkin(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_JOINT], COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE);
         DRFL_API LPROBOT_POSE _addto(LPROBOTCONTROL pCtrl, float fSourcePos[NUM_JOINT], float fOffset[NUM_JOINT]);
 
@@ -408,6 +411,8 @@ namespace DRAFramework
 
         DRFL_API bool _change_collision_sensitivity(LPROBOTCONTROL pCtrl, float fSensitivity);
         DRFL_API bool _set_palletizing_mode(LPROBOTCONTROL pCtrl, unsigned char iMode);
+        
+        DRFL_API bool _set_auto_safety_move_stop(LPROBOTCONTROL pCtrl, bool bFuncEnable);
         ////////////////////////////////////////////////////////////////////////////
         //  drl program Operations                                                //
         ////////////////////////////////////////////////////////////////////////////
@@ -566,7 +571,9 @@ namespace DRAFramework
 
         LPROBOT_POSE trans(float fSourcePos[NUM_TASK], float fOffset[NUM_TASK], COORDINATE_SYSTEM eSourceRef = COORDINATE_SYSTEM_BASE, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE){return _trans(_rbtCtrl, fSourcePos, fOffset, eSourceRef, eTargetRef);};
         LPROBOT_POSE ikin(float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE){return _ikin(_rbtCtrl, fSourcePos, iSolutionSpace, eTargetRef); };
-		LPINVERSE_KINEMATIC_RESPONSE ikin(float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, unsigned char iRefPosOpt){return _ikin_ex(_rbtCtrl, fSourcePos, iSolutionSpace, eTargetRef, iRefPosOpt); };
+        LPINVERSE_KINEMATIC_RESPONSE ikin(float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, unsigned char iRefPosOpt){return _ikin_ex(_rbtCtrl, fSourcePos, iSolutionSpace, eTargetRef, iRefPosOpt); };
+        LPINVERSE_KINEMATIC_RESPONSE ikin(float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, float fIterThreshold[NUMBER_OF_ITER_THRESHOULD]){return _ikin_add_iter_threshold(_rbtCtrl, fSourcePos, iSolutionSpace, eTargetRef, fIterThreshold); };
+        LPINVERSE_KINEMATIC_RESPONSE ikin_norm(float fSourcePos[NUM_TASK], unsigned char iSolutionSpace, COORDINATE_SYSTEM eTargetRef, unsigned char iRefPosOpt){return _ikin_norm(_rbtCtrl, fSourcePos, iSolutionSpace, eTargetRef, iRefPosOpt); };
 		LPROBOT_POSE fkin(float fSourcePos[NUM_JOINT], COORDINATE_SYSTEM eTargetRef = COORDINATE_SYSTEM_BASE){return _fkin(_rbtCtrl, fSourcePos, eTargetRef); };        
         LPROBOT_POSE addto(float fSourcePos[NUM_JOINT], float fOffset[NUM_JOINT]) { return _addto(_rbtCtrl, fSourcePos, fOffset); };
 
@@ -813,6 +820,8 @@ namespace DRAFramework
         LPSAFETY_CONFIGURATION_EX2 get_safety_configuration_ex(){ return _get_safety_configuration_ex(_rbtCtrl); };
 
         int check_motion() {return _check_motion(_rbtCtrl);};
+        
+        bool set_auto_safety_move_stop(bool bFuncEnable) {return _set_auto_safety_move_stop(_rbtCtrl, bFuncEnable); };
         ////////////////////////////////////////////////////////////////////////////
         //  drl program Operations                                                //
         ////////////////////////////////////////////////////////////////////////////

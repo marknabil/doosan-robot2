@@ -312,6 +312,22 @@ typedef struct _ROBOT_MONITORING_AMODEL
 typedef ROBOT_MONITORING_AMODEL
     MONITORING_AMODEL, *LPMONITORING_AMODEL;
 
+// typedef struct _MONITORING_FORCECONTROL
+// {
+// /* digital button state */
+//     unsigned char               _iActualBS[NUMBER_OF_BUTTON];
+//     /* current sensor */
+//     float                       _fActualCS[NUMBER_OF_JOINT];
+//     /* singularity */
+//     float                       _fSingularity;
+//     /* Tool Coord External Task Force/Torque */
+//     float                       _fToolActualETT[NUMBER_OF_JOINT];
+//     /* ForceControlMode */
+//     unsigned char               _iForceControlMode[NUMBER_OF_JOINT]; // 0:Compliance, 1:Force Control, 2:None
+//     /* reference coordinate */
+//     unsigned char               _iReferenceCoord;  // 0:Base, 1:Tool, 2:World, 101~120:User Coord
+// } MONITORING_FORCECONTROL, *LPMONITORING_FORCECONTROL;
+
 typedef struct _MONITORING_FORCECONTROL
 {
 /* digital button state */
@@ -326,6 +342,19 @@ typedef struct _MONITORING_FORCECONTROL
     unsigned char               _iForceControlMode[NUMBER_OF_JOINT]; // 0:Compliance, 1:Force Control, 2:None
     /* reference coordinate */
     unsigned char               _iReferenceCoord;  // 0:Base, 1:Tool, 2:World, 101~120:User Coord
+#ifdef _FUNC_AUTO_ACCELERATION
+    /* auto acceleration mode */
+    unsigned char               _iAutoAccMode;
+#endif
+#if defined (_FUNC_E_SERIES)
+    /* reducer temperature */
+    float                       _fActualHDT[NUMBER_OF_JOINT];
+#endif
+    /* Singluar Handling Mode */
+    unsigned char               _iSingularHandlingMode;
+    /* isMoving (DRCL) */
+    unsigned char               _isMoving;
+    unsigned char               reserved[2];
 } MONITORING_FORCECONTROL, *LPMONITORING_FORCECONTROL;
 
 typedef struct _MONITORING_DATA_EX
@@ -1188,8 +1217,8 @@ typedef struct _MODBUS_DATA_LIST
 
 typedef struct _CONFIG_WORLD_COORDINATE
 {
-    /* ¼³Á¤Å¸ÀÔ: world2base: 0, base2ref: 1, world2ref: 2 */
-    /* ¼³Á¤¿©ºÎ: ¹Ì¼³Á¤: 0, ¼³Á¤: 1*/
+    /* ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½: world2base: 0, base2ref: 1, world2ref: 2 */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: ï¿½Ì¼ï¿½ï¿½ï¿½: 0, ï¿½ï¿½ï¿½ï¿½: 1*/
     unsigned char               _iType;
     /* target pose */
     float                       _fPosition[NUMBER_OF_JOINT];
@@ -1885,7 +1914,7 @@ typedef struct _CONVEYOR_COORD_EX
     int                _iDistance2Count;
     /* converyor coordination */
     POSITION            _tPosConCoord;
-    /*Base ÁÂÇ¥: 0, World ÁÂÇ¥: 2 */
+    /*Base ï¿½ï¿½Ç¥: 0, World ï¿½ï¿½Ç¥: 2 */
     unsigned char       _iTargetRef;
 } CONVEYOR_COORD_EX, *LPCONVEYOR_COORD_EX;
 
@@ -2040,17 +2069,17 @@ typedef struct _CONFIG_WELD_SETTING
     struct {
         /* ratio start */
         float                   _fRs;
-        /* º¸È£°¡½º¹æÃâ½Ã°£ */
+        /* ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTss;
-        /* ½ÃÀÛÀü·ù½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTas;
-        /* ¿ëÁ¢Á¶°Çº¯°æ½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTwc;
         /* ratio finish */
         float                   _fRf;
-        /* Á¾·áÀü·ù½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTaf;
-        /* Á¾·áº¸È£°¡½º¹æÃâ½Ã°£ */
+        /* ï¿½ï¿½ï¿½áº¸È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTsf;
     } _tDetail;
 } CONFIG_WELD_SETTING, *LPCONFIG_WELD_SETTING;
@@ -2228,21 +2257,21 @@ typedef struct _CONFIG_ANALOG_WELDING_SETTING
     {
         /* ratio start */
         float                   _fRs;
-        /* º¸È£°¡½º¹æÃâ½Ã°£ */
+        /* ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTss;
-        /* ½ÃÀÛÀü·ù½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTas;
-        /* ¿ëÁ¢Á¶°Çº¯°æ½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTwc;
         /* ratio finish */
         float                   _fRf;
-        /* Á¾·áÀü·ù½Ã°£ */
+        /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTaf;
-        /* Á¾·áº¸È£°¡½º¹æÃâ½Ã°£ */
+        /* ï¿½ï¿½ï¿½áº¸È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ */
         float                   _fTsf;
-        /* ½ÃÀÛ Àü¾Ð Á¶°Ç */
+        /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
         float                   _fStartVoltage;
-        /* Á¾·á Àü¾Ð Á¶°Ç */
+        /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
         float                   _fEndVoltage;
     } _tDetail;
     float                       _fTargetFeedingSpeed;
@@ -2771,7 +2800,7 @@ typedef struct _USER_COORD_EXTERNAL_FORCE_INFO
 
 typedef struct _MEASURE_FRICTION_RESPONSE
 {
-    /* measure result : 0(½ÇÆÐ), 1(¼º°ø) */
+    /* measure result : 0(ï¿½ï¿½ï¿½ï¿½), 1(ï¿½ï¿½ï¿½ï¿½) */
     unsigned char               _iResult[NUMBER_OF_JOINT];
     /* measrue error (N/m) */
     float                       _fError[NUMBER_OF_JOINT];
@@ -2815,7 +2844,7 @@ typedef struct _POSITION_ADDTO
 
 typedef struct _MEASURE_FRICTION
 {
-    /* measure type : 0(Ã¼Å©¸ð¼Ç), 1(ÃøÁ¤¸ð¼Ç) */
+    /* measure type : 0(Ã¼Å©ï¿½ï¿½ï¿½), 1(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) */
     unsigned char               _iType;
     /* select joint */
     unsigned char               _iSelect[NUMBER_OF_JOINT];
@@ -3306,7 +3335,7 @@ typedef struct _SAFETY_CONFIGURATION_EX2
 
 
     int _iUserCoordCount;
-    CONFIG_USER_COORDINATE_EX _tUserCoordinates[20];
+    CONFIG_USER_COORDINATE_EX _tUserCoordinates[100];
 
     CONFIG_CONFIGURABLE_IO _tConfigurableIO;
 
