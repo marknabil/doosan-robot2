@@ -653,8 +653,8 @@ void DSRInterface::OnMonitoringStateCB(const ROBOT_STATE eState)
         break;
     case STATE_SAFE_STOP:
         if (g_bHasControlAuthority) {
-            Drfl.set_safe_stop_reset_type(SAFE_STOP_RESET_TYPE_DEFAULT);
-            Drfl.set_robot_control(CONTROL_RESET_SAFET_STOP);
+            // Drfl.set_safe_stop_reset_type(SAFE_STOP_RESET_TYPE_DEFAULT);
+            // Drfl.set_robot_control(CONTROL_RESET_SAFET_STOP);
         }
         break;
     case STATE_SAFE_OFF:
